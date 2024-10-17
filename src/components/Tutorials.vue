@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="container mx-auto px-4">
     <h2 class="text-3xl font-bold mb-6">Tutorials</h2>
     <div v-if="tutorials.length === 0" class="text-center text-gray-600">
       No tutorials available.
     </div>
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="tutorial in tutorials" :key="tutorial.id" class="bg-white rounded-lg shadow-md p-6">
+      <div v-for="tutorial in tutorials" :key="tutorial.id" class="bg-white rounded-lg shadow-md p-6 transition duration-300 hover:shadow-xl">
         <h3 class="text-xl font-semibold mb-2">{{ tutorial.title }}</h3>
         <p class="text-gray-600 mb-4">{{ tutorial.description }}</p>
         <p class="text-blue-600 font-semibold mb-4">Price: ${{ tutorial.price }}</p>
@@ -13,7 +13,7 @@
           @click="purchaseTutorial(tutorial)"
           :disabled="!isAuthenticated || isOwnTutorial(tutorial)"
           :class="[
-            'px-4 py-2 rounded-lg transition duration-300',
+            'w-full px-4 py-2 rounded-lg transition duration-300',
             isAuthenticated && !isOwnTutorial(tutorial)
               ? 'bg-green-500 text-white hover:bg-green-600'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'

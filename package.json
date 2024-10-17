@@ -7,12 +7,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.1.5",
     "@supabase/supabase-js": "^2.24.0",
     "@vue/cli": "^5.0.8",
     "hono": "^3.2.5",
     "stripe": "^12.9.0",
     "vue": "^3.5.12",
-    "vue-router": "^4.2.2"
+    "vue-router": "^4.2.2",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

@@ -1,31 +1,21 @@
 <template>
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
     <h2 class="text-3xl font-bold mb-6">User Profile</h2>
     
     <!-- Tabs -->
-    <div class="mb-6">
+    <div class="mb-6 flex border-b">
       <button 
-        @click="activeTab = 'profile'" 
-        :class="['px-4 py-2 mr-2 rounded-t-lg', activeTab === 'profile' ? 'bg-blue-600 text-white' : 'bg-gray-200']"
+        v-for="tab in ['profile', 'tutorials', 'create']"
+        :key="tab"
+        @click="activeTab = tab" 
+        :class="['px-4 py-2 font-medium', activeTab === tab ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700']"
       >
-        Profile Info
-      </button>
-      <button 
-        @click="activeTab = 'tutorials'" 
-        :class="['px-4 py-2 mr-2 rounded-t-lg', activeTab === 'tutorials' ? 'bg-blue-600 text-white' : 'bg-gray-200']"
-      >
-        My Tutorials
-      </button>
-      <button 
-        @click="activeTab = 'create'" 
-        :class="['px-4 py-2 rounded-t-lg', activeTab === 'create' ? 'bg-blue-600 text-white' : 'bg-gray-200']"
-      >
-        Create Tutorial
+        {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
       </button>
     </div>
 
     <!-- Profile Info Tab -->
-    <div v-if="activeTab === 'profile'" class="bg-white p-6 rounded-lg shadow-md">
+    <div v-if="activeTab === 'profile'" class="space-y-4">
       <form @submit.prevent="updateProfile" class="space-y-4">
         <div>
           <label for="email" class="block mb-1">Email</label>
@@ -111,6 +101,7 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from '../utils/supabase'
 import { useRouter } from 'vue-router'
+import { useToast } from "vue-toastification";
 
 export default {
   name: 'Profile',
@@ -132,6 +123,7 @@ export default {
     })
     const activeTab = ref('profile')
     const editingTutorial = ref(false)
+    const toast = useToast();
 
     const updateProfile = async () => {
       try {
@@ -150,9 +142,10 @@ export default {
         
         if (error) throw error
         console.log('Profile updated')
+        toast.success("Profile updated successfully!");
       } catch (error) {
         console.error('Error updating profile:', error.message)
-        errorMessage.value = error.message
+        toast.error(`Error updating profile: ${error.message}`);
       }
     }
 

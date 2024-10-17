@@ -6,6 +6,7 @@ import Tutorials from "./components/Tutorials.vue";
 import Profile from "./components/Profile.vue";
 import SignIn from "./components/SignIn.vue";
 import { supabase } from "./utils/supabase";
+import AboutUs from "./components/AboutUs.vue";
 import "./index.css";
 
 const routes = [
@@ -13,6 +14,7 @@ const routes = [
   { path: "/tutorials", component: Tutorials },
   { path: "/profile", component: Profile, meta: { requiresAuth: true } },
   { path: "/signin", component: SignIn },
+  { path: "/about", component: AboutUs },
 ];
 
 const router = createRouter({
