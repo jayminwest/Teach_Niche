@@ -1,34 +1,36 @@
-import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import App from './App.vue'
-import Home from './components/Home.vue'
-import Tutorials from './components/Tutorials.vue'
-import Profile from './components/Profile.vue'
-import SignIn from './components/SignIn.vue'
-import { supabase } from './utils/supabase'
-import './index.css'
+import { createApp } from "vue";
+import { createRouter, createWebHistory } from "vue-router";
+import App from "./App.vue";
+import Home from "./components/Home.vue";
+import Tutorials from "./components/Tutorials.vue";
+import Profile from "./components/Profile.vue";
+import SignIn from "./components/SignIn.vue";
+import { supabase } from "./utils/supabase";
+import "./index.css";
 
 const routes = [
-  { path: '/', component: Home },
-  { path: '/tutorials', component: Tutorials },
-  { path: '/profile', component: Profile, meta: { requiresAuth: true } },
-  { path: '/signin', component: SignIn }
-]
+  { path: "/", component: Home },
+  { path: "/tutorials", component: Tutorials },
+  { path: "/profile", component: Profile, meta: { requiresAuth: true } },
+  { path: "/signin", component: SignIn },
+];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
-})
+  routes,
+});
 
 router.beforeEach(async (to, from, next) => {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (to.matched.some(record => record.meta.requiresAuth) && !session) {
-    next('/signin')
+  const { data: { session } } = await supabase.auth.getSession();
+  if (to.matched.some((record) => record.meta.requiresAuth) && !session) {
+    next("/signin");
   } else {
-    next()
+    next();
   }
-})
+});
 
-const app = createApp(App)
-app.use(router)
-app.mount('#app')
+const app = createApp(App);
+app.use(router);
+app.mount("#app");
+
+console.log("Vue app mounted");

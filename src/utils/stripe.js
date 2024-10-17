@@ -1,4 +1,4 @@
-const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
 // You would typically load Stripe in your HTML file
 // <script src="https://js.stripe.com/v3/"></script>
@@ -7,4 +7,4 @@ const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 // export const stripe = window.Stripe(stripePublishableKey)
 
 // For now, we'll just export the key
-export const stripeKey = stripePublishableKey
+export const stripeKey = stripePublishableKey;
