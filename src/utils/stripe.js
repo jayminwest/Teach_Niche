@@ -1,10 +1,16 @@
-const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+import Stripe from "stripe";
+import dotenv from 'dotenv';
 
-// You would typically load Stripe in your HTML file
-// <script src="https://js.stripe.com/v3/"></script>
+dotenv.config();
 
-// Then you can use it like this:
-// export const stripe = window.Stripe(stripePublishableKey)
+const stripeSecretKey = process.env.VITE_STRIPE_SECRET_KEY;
 
-// For now, we'll just export the key
-export const stripeKey = stripePublishableKey;
+if (!stripeSecretKey) {
+  console.error('Stripe secret key is not set in environment variables');
+}
+
+console.log('Stripe secret key:', stripeSecretKey ? 'Set' : 'Not set'); // Add this line
+
+export const stripe = new Stripe(stripeSecretKey, {
+  apiVersion: '2023-10-16', // Use the latest API version
+});

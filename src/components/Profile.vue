@@ -42,6 +42,11 @@
           </button>
         </div>
       </form>
+      <div class="mt-6">
+        <button @click="connectStripeAccount" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300">
+          Connect Stripe Account
+        </button>
+      </div>
     </div>
 
     <!-- My Tutorials Tab -->
@@ -258,6 +263,28 @@ export default {
       }
     }
 
+    const connectStripeAccount = async () => {
+      try {
+        const response = await fetch('/api/payments/create-connect-account', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        const data = await response.json()
+
+        if (data.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('Failed to create Stripe Connect account')
+        }
+      } catch (error) {
+        console.error('Error creating Stripe Connect account:', error)
+        alert('An error occurred while connecting your Stripe account. Please try again.')
+      }
+    }
+
     onMounted(async () => {
       await readProfile()
       await fetchUserTutorials()
@@ -275,7 +302,8 @@ export default {
       updateTutorial,
       deleteTutorial,
       activeTab,
-      editingTutorial
+      editingTutorial,
+      connectStripeAccount
     }
   }
 }

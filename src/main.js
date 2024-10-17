@@ -7,6 +7,7 @@ import Profile from "./components/Profile.vue";
 import SignIn from "./components/SignIn.vue";
 import { supabase } from "./utils/supabase";
 import AboutUs from "./components/AboutUs.vue";
+import Legal from "./components/Legal.vue";
 import "./index.css";
 
 const routes = [
@@ -15,6 +16,7 @@ const routes = [
   { path: "/profile", component: Profile, meta: { requiresAuth: true } },
   { path: "/signin", component: SignIn },
   { path: "/about", component: AboutUs },
+  { path: "/legal", component: Legal },
 ];
 
 const router = createRouter({

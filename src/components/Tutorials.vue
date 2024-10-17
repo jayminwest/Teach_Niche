@@ -10,7 +10,7 @@
         <p class="text-gray-600 mb-4">{{ tutorial.description }}</p>
         <p class="text-blue-600 font-semibold mb-4">Price: ${{ tutorial.price }}</p>
         <button 
-          @click="purchaseTutorial(tutorial)"
+          @click="buyTutorial(tutorial)"
           :disabled="!isAuthenticated || isOwnTutorial(tutorial)"
           :class="[
             'w-full px-4 py-2 rounded-lg transition duration-300',
@@ -19,7 +19,7 @@
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           ]"
         >
-          {{ getPurchaseButtonText(tutorial) }}
+          {{ getBuyButtonText(tutorial) }}
         </button>
       </div>
     </div>
@@ -60,30 +60,52 @@ export default {
       return currentUser.value && tutorial.author_id === currentUser.value.id
     }
 
-    const getPurchaseButtonText = (tutorial) => {
-      if (!isAuthenticated.value) return 'Sign in to purchase'
+    const getBuyButtonText = (tutorial) => {
+      if (!isAuthenticated.value) return 'Sign in to buy'
       if (isOwnTutorial(tutorial)) return 'Your tutorial'
-      return 'Purchase'
+      return 'Buy Tutorial'
     }
 
-    const purchaseTutorial = async (tutorial) => {
+    const buyTutorial = async (tutorial) => {
       if (!isAuthenticated.value) {
-        alert('Please sign in to purchase tutorials.')
+        alert('Please sign in to buy tutorials.')
         router.push('/signin')
         return
       }
 
       if (isOwnTutorial(tutorial)) {
-        alert('You cannot purchase your own tutorial.')
+        alert('You cannot buy your own tutorial.')
         return
       }
 
-      // This is a placeholder function for now
-      console.log(`Purchasing tutorial with ID: ${tutorial.id}`)
-      // Here you would typically:
-      // 1. Initiate the Stripe payment process
-      // 2. On successful payment, grant access to the tutorial
-      alert('Purchase functionality will be implemented with Stripe integration.')
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        console.log('Auth session:', session);
+        const response = await fetch('/api/payments/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({
+            tutorialId: tutorial.id,
+            price: tutorial.price,
+          }),
+        });
+
+        console.log('Response status:', response.status);
+        const responseData = await response.json();
+        console.log('Response data:', responseData);
+
+        if (!response.ok) {
+          throw new Error(responseData.error || 'Failed to create checkout session')
+        }
+
+        window.location = responseData.url;
+      } catch (error) {
+        console.error('Error creating checkout session:', error)
+        // Display error to user
+      }
     }
 
     onMounted(async () => {
@@ -95,9 +117,10 @@ export default {
       tutorials,
       isAuthenticated,
       isOwnTutorial,
-      getPurchaseButtonText,
-      purchaseTutorial
+      getBuyButtonText,
+      buyTutorial
     }
   }
 }
 </script>
+
