@@ -1,18 +1,17 @@
 <template>
-  <div>
-    <h2 class="text-2xl font-bold mb-4">Stripe Connect Status</h2>
+  <div class="mt-6">
+    <h3 class="text-xl font-semibold mb-4">Stripe Connect Status</h3>
     <div v-if="loading">Loading...</div>
-    <div v-else-if="error">{{ error }}</div>
+    <div v-else-if="error" class="text-red-600">{{ error }}</div>
     <div v-else>
-      <p>Charges Enabled: {{ status.chargesEnabled ? 'Yes' : 'No' }}</p>
-      <p>Payouts Enabled: {{ status.payoutsEnabled ? 'Yes' : 'No' }}</p>
-      <p>Details Submitted: {{ status.detailsSubmitted ? 'Yes' : 'No' }}</p>
+      <p>Account Status: {{ status ? 'Connected' : 'Not Connected' }}</p>
+      <p v-if="status">Payouts Enabled: {{ status.payouts_enabled ? 'Yes' : 'No' }}</p>
       <button
-        v-if="!status.chargesEnabled || !status.payoutsEnabled"
+        v-if="!status || !status.payouts_enabled"
         @click="startOnboarding"
-        class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
       >
-        Start Stripe Connect Onboarding
+        {{ status ? 'Complete Stripe Onboarding' : 'Connect Stripe Account' }}
       </button>
     </div>
   </div>
@@ -31,7 +30,12 @@ export default {
 
     const fetchStatus = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('stripe-status')
+        const { data: { session } } = await supabase.auth.getSession()
+        const { data, error } = await supabase.functions.invoke('stripe-connect-status', {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`
+          }
+        })
         if (error) throw error
         status.value = data
       } catch (err) {
@@ -43,9 +47,18 @@ export default {
 
     const startOnboarding = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('stripe-connect')
+        const { data: { session } } = await supabase.auth.getSession()
+        const { data, error } = await supabase.functions.invoke('stripe-connect-onboarding', {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`
+          }
+        })
         if (error) throw error
-        window.location.href = data.url
+        if (data && data.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('No onboarding URL received')
+        }
       } catch (err) {
         error.value = err.message
       }

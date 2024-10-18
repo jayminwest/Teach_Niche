@@ -8,11 +8,13 @@ import SignIn from "./components/SignIn.vue";
 import { supabase } from "./utils/supabase";
 import AboutUs from "./components/AboutUs.vue";
 import Legal from "./components/Legal.vue";
+import TutorialView from "./components/TutorialView.vue";
 import "./index.css";
 
 const routes = [
   { path: "/", component: Home },
   { path: "/tutorials", component: Tutorials },
+  { path: "/tutorials/:id", name: "TutorialView", component: () => import('./components/TutorialView.vue'), meta: { requiresAuth: true } },
   { path: "/profile", component: Profile, meta: { requiresAuth: true } },
   { path: "/signin", component: SignIn },
   { path: "/about", component: AboutUs },

@@ -43,10 +43,12 @@
         </div>
       </form>
       <div class="mt-6">
-        <button @click="connectStripeAccount" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300">
+        <button v-if="!profile.stripe_account_id" @click="connectStripeAccount" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300">
           Connect Stripe Account
         </button>
+        <p v-else class="text-green-600 font-semibold">Stripe account connected</p>
       </div>
+      <StripeConnect />
     </div>
 
     <!-- My Tutorials Tab -->
@@ -75,7 +77,10 @@
     <!-- Create Tutorial Tab -->
     <div v-if="activeTab === 'create'" class="bg-white p-6 rounded-lg shadow-md">
       <h3 class="text-2xl font-bold mb-4">{{ editingTutorial ? 'Edit Tutorial' : 'Create a New Tutorial' }}</h3>
-      <form @submit.prevent="editingTutorial ? updateTutorial() : createTutorial()" class="space-y-4">
+      <div v-if="!profile.stripe_account_id" class="text-red-600 mb-4">
+        You need to connect your Stripe account before creating tutorials. Please go to the Profile tab to connect your account.
+      </div>
+      <form v-else @submit.prevent="editingTutorial ? updateTutorial() : createTutorial()" class="space-y-4">
         <div>
           <label for="title" class="block mb-1">Title</label>
           <input v-model="newTutorial.title" id="title" type="text" required class="w-full px-3 py-2 border rounded-lg">
@@ -103,19 +108,24 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { supabase } from '../utils/supabase'
 import { useRouter } from 'vue-router'
 import { useToast } from "vue-toastification";
+import StripeConnect from './StripeConnect.vue'
 
 export default {
   name: 'Profile',
+  components: {
+    StripeConnect
+  },
   setup() {
     const profile = ref({
       email: '',
       username: '',
       bio: '',
-      avatar_url: ''
+      avatar_url: '',
+      stripe_account_id: null
     })
     const errorMessage = ref('')
     const router = useRouter()
@@ -203,6 +213,11 @@ export default {
     }
 
     const createTutorial = async () => {
+      if (!profile.value.stripe_account_id) {
+        errorMessage.value = "You need to connect your Stripe account before creating tutorials."
+        return
+      }
+
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) throw new Error('No user logged in')
