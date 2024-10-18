@@ -10,6 +10,8 @@
     "@heroicons/vue": "^2.1.5",
     "@hono/node-server": "^1.13.2",
     "@supabase/supabase-js": "^2.24.0",
+    "@tiptap/starter-kit": "^2.8.0",
+    "@tiptap/vue-3": "^2.8.0",
     "@vue/cli": "^5.0.8",
     "dotenv": "^16.4.5",
     "hono": "^4.6.5",
